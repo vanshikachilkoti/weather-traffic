@@ -7,9 +7,13 @@ import os
 
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 
+# Base directory and model path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, 'model')
+
 # Load model
 try:
-    model = joblib.load('model/traffic_stack_model.joblib')
+    model = joblib.load(os.path.join(MODEL_DIR, 'traffic_stack_model.joblib'))
     print("Model loaded successfully")
 except Exception as e:
     print(f"Error loading model: {e}")
@@ -17,7 +21,7 @@ except Exception as e:
 
 # Load feature columns
 try:
-    with open('model/feature_columns.json', 'r') as f:
+    with open(os.path.join(MODEL_DIR, 'feature_columns.json'), 'r') as f:
         feature_columns = json.load(f)
     print("Feature columns loaded successfully")
 except Exception as e:
@@ -26,7 +30,7 @@ except Exception as e:
 
 # Load scaler
 try:
-    scaler = joblib.load('model/scaler.joblib')
+    scaler = joblib.load(os.path.join(MODEL_DIR, 'scaler.joblib'))
     print("Scaler loaded successfully")
 except Exception as e:
     print(f"Error loading scaler: {e}")
@@ -34,7 +38,7 @@ except Exception as e:
 
 # Load metrics
 try:
-    with open('model/performance_metrics.json', 'r') as f:
+    with open(os.path.join(MODEL_DIR, 'performance_metrics.json'), 'r') as f:
         metrics = json.load(f)
     print("Performance metrics loaded successfully")
 except Exception as e:
@@ -48,7 +52,8 @@ def home():
 @app.route('/dataset')
 def dataset():
     try:
-        data = pd.read_csv('Metro_Interstate_Traffic_Volume.csv')
+        dataset_path = os.path.join(BASE_DIR, 'Metro_Interstate_Traffic_Volume.csv')
+        data = pd.read_csv(dataset_path)
         sample_data = data.head(100)
         return render_template('dataset.html',
                                data=sample_data.to_html(classes='table table-striped', index=False))
@@ -76,10 +81,9 @@ def predict():
 
     if request.method == 'POST':
         if not all([model, scaler, feature_columns]):
-            error_msg = "Model assets not fully loaded. Check server logs."
+            error_msg = "⚠️ Model assets not fully loaded. Check server logs."
         else:
             try:
-                # Extract form data
                 hour = int(request.form['hour'])
                 weekday = int(request.form['weekday'])
 
@@ -97,23 +101,19 @@ def predict():
                     'holiday_None': 1
                 }
 
-                # Add selected weather condition
                 weather = request.form['weather']
                 input_data[weather] = 1
 
-                # Create DataFrame and ensure all feature columns
                 input_df = pd.DataFrame([input_data])
                 for col in feature_columns:
                     if col not in input_df.columns:
                         input_df[col] = 0
                 input_df = input_df[feature_columns]
 
-                # Scale and predict
                 input_scaled = scaler.transform(input_df)
                 prediction = model.predict(input_scaled)[0]
                 prediction_text = f"🚗 Predicted Traffic Volume: {prediction:,.0f} vehicles"
 
-                # Traffic alert
                 if prediction < 2000:
                     traffic_alert = "🟢 Light traffic expected. Ideal time to travel."
                 elif prediction < 4000:
@@ -121,8 +121,7 @@ def predict():
                 else:
                     traffic_alert = "🔴 Heavy traffic expected. Consider delaying your trip or using alternate routes."
 
-                # Compare with historical average (mock value, replace with real if needed)
-                historical_avg = 3200  # Placeholder for the given hour
+                historical_avg = 3200
                 diff = prediction - historical_avg
                 pct_change = (diff / historical_avg) * 100
                 if diff > 0:
@@ -130,7 +129,6 @@ def predict():
                 else:
                     historical_comparison = f"📉 {abs(pct_change):.1f}% lower than average for this hour."
 
-                # Smart recommendation
                 if hour in [7, 8, 9, 17, 18]:
                     smart_tip = "💡 Try leaving 30 minutes earlier or later to avoid peak congestion."
                 elif prediction > 4500:
