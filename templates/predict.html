@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Traffic Volume Prediction</h2>
+
+<form method="POST" id="predictForm" class="prediction-form">
+    <div class="form-group">
+        <label for="temperature">Temperature (°C)</label>
+        <input type="number" step="0.1" id="temperature" name="temperature" required>
+    </div>
+
+    <div class="form-group">
+        <label for="rain">Rain (mm in last hour)</label>
+        <input type="number" step="0.1" id="rain" name="rain" required>
+    </div>
+
+    <div class="form-group">
+        <label for="snow">Snow (mm in last hour)</label>
+        <input type="number" step="0.1" id="snow" name="snow" required>
+    </div>
+
+    <div class="form-group">
+        <label for="cloud_cover">Cloud Cover (%)</label>
+        <input type="number" min="0" max="100" id="cloud_cover" name="cloud_cover" required>
+    </div>
+
+    <div class="form-group">
+        <label for="hour">Hour of Day (0-23)</label>
+        <input type="number" min="0" max="23" id="hour" name="hour" required>
+    </div>
+
+    <div class="form-group">
+        <label for="weekday">Day of Week</label>
+        <select id="weekday" name="weekday" required>
+            <option value="0">Monday</option>
+            <option value="1">Tuesday</option>
+            <option value="2">Wednesday</option>
+            <option value="3">Thursday</option>
+            <option value="4">Friday</option>
+            <option value="5">Saturday</option>
+            <option value="6">Sunday</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="month">Month</label>
+        <input type="number" min="1" max="12" id="month" name="month" required>
+    </div>
+
+    <div class="form-group">
+        <label>Is Weekend?</label>
+        <div class="radio-group">
+            <input type="radio" id="weekend_yes" name="is_weekend" value="yes">
+            <label for="weekend_yes">Yes</label>
+            <input type="radio" id="weekend_no" name="is_weekend" value="no" checked>
+            <label for="weekend_no">No</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Is Peak Hour?</label>
+        <div class="radio-group">
+            <input type="radio" id="peak_yes" name="is_peak_hour" value="yes">
+            <label for="peak_yes">Yes</label>
+            <input type="radio" id="peak_no" name="is_peak_hour" value="no" checked>
+            <label for="peak_no">No</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Is Daytime?</label>
+        <div class="radio-group">
+            <input type="radio" id="daytime_yes" name="is_daytime" value="yes">
+            <label for="daytime_yes">Yes</label>
+            <input type="radio" id="daytime_no" name="is_daytime" value="no" checked>
+            <label for="daytime_no">No</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="weather">Weather Condition</label>
+        <select id="weather" name="weather" required>
+            <option value="weather_main_Clear">Clear</option>
+            <option value="weather_main_Clouds">Cloudy</option>
+            <option value="weather_main_Rain">Rain</option>
+            <option value="weather_main_Snow">Snow</option>
+            <option value="weather_main_Thunderstorm">Thunderstorm</option>
+            <option value="weather_main_Fog">Fog</option>
+            <option value="weather_main_Mist">Mist</option>
+            <option value="weather_main_Drizzle">Drizzle</option>
+            <option value="weather_main_Haze">Haze</option>
+        </select>
+    </div>
+
+    <button type="submit" class="predict-button">Predict Traffic Volume</button>
+</form>
+
+{% if prediction is not none %}
+<div class="prediction-results">
+    <h3>Prediction Results</h3>
+    <div class="result-card">
+        <p><strong>{{ prediction_text }}</strong></p>
+        
+        {% if traffic_alert %}
+        <p style="font-size: 1.1em; color: #333;">{{ traffic_alert }}</p>
+        {% endif %}
+
+        {% if historical_comparison %}
+        <p><em>{{ historical_comparison }}</em></p>
+        {% endif %}
+
+        {% if smart_tip %}
+        <p style="margin-top: 10px; font-style: italic;">{{ smart_tip }}</p>
+        {% endif %}
+
+        {% if metrics %}
+        <div class="model-info">
+            <p><strong>Model Performance:</strong></p>
+            <ul>
+                <li>MAE: {{ "%.2f"|format(metrics.MAE) }}</li>
+                <li>RMSE: {{ "%.2f"|format(metrics.RMSE) }}</li>
+                <li>R² Score: {{ "%.4f"|format(metrics.R2) }}</li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% if error_msg %}
+<div class="error-message">
+    <p>⚠️ {{ error_msg }}</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="hero">
+        <h1>Traffic Volume Predictor</h1>
+        <p>Predict and analyze traffic volume patterns using machine learning. Get real-time insights from historical trends, weather, and time data to reduce congestion and plan smarter routes.</p>
+    </div>
+
+    {% if metrics %}
+    <section class="performance-metrics">
+        <h2>Model Performance</h2>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <h3>MAE</h3>
+                <p>{{ "%.2f"|format(metrics.MAE) }}</p>
+                <p>Mean Absolute Error</p>
+            </div>
+            <div class="metric-card">
+                <h3>RMSE</h3>
+                <p>{{ "%.2f"|format(metrics.RMSE) }}</p>
+                <p>Root Mean Squared Error</p>
+            </div>
+            <div class="metric-card">
+                <h3>R² Score</h3>
+                <p>{{ "%.4f"|format(metrics.R2) }}</p>
+                <p>Model Accuracy</p>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if not model_loaded %}
+    <div class="warning">
+        <p>⚠️ Warning: Model not loaded. Predictions will not work.</p>
+    </div>
+    {% endif %}
+{% endblock %}

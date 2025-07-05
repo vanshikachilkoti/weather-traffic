@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Traffic Volume Analysis</h2>
+    <div class="image-row">
+    <div class="image-item">
+        <h4>Hourly Traffic Patterns</h4>
+        <img src="{{ url_for('static', filename='images/hourly_traffic_patterns.png') }}" alt="Hourly Patterns">
+    </div>
+    <div class="image-item">
+        <h4>Daily Traffic Patterns</h4>
+        <img src="{{ url_for('static', filename='images/daily_traffic_patterns.png') }}" alt="Daily Patterns">
+    </div>
+</div>
+<div class="image-row">
+    <div class="image-item">
+        <h4>Monthly Traffic Patterns</h4>
+        <img src="{{ url_for('static', filename='images/monthly_traffic_patterns.png') }}" alt="Monthly Patterns">
+    </div>
+    <div class="image-item">
+        <h4>Combined Traffic Patterns</h4>
+        <img src="{{ url_for('static', filename='images/combined_traffic_patterns.png') }}" alt="Combined Patterns">
+    </div>
+</div>
+    <div class="image-gallery">
+        <h3>Model Analysis</h3>
+
+        <div class="image-row">
+            <div class="image-item">
+                <h4>Traffic by Hour</h4>
+                <img src="{{ url_for('static', filename='images/traffic_by_hour.png') }}" alt="Traffic by Hour">
+            </div>
+            <div class="image-item">
+                <h4>Actual vs Predicted</h4>
+                <img src="{{ url_for('static', filename='images/actual_vs_predicted.png') }}" alt="Actual vs Predicted">
+            </div>
+        </div>
+
+        <div class="image-row">
+            <div class="image-item">
+                <h4>Residual Plot</h4>
+                <img src="{{ url_for('static', filename='images/residual_plot.png') }}" alt="Residual Plot">
+            </div>
+            <div class="image-item">
+                <h4>Feature Importances</h4>
+                <img src="{{ url_for('static', filename='images/feature_importances.png') }}" alt="Feature Importances">
+            </div>
+        </div>
+    </div>
+{% endblock %}

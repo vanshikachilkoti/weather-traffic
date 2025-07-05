@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Traffic Dataset Overview</h2>
+    <div class="table-container">
+        {{ data | safe }}
+    </div>
+    <div class="data-info">
+        <p>Showing first 100 rows of the dataset</p>
+    </div>
+{% endblock %}
